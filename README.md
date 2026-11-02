@@ -19,4 +19,4 @@ Website: `https://nor001.github.io/ABAP_Keyflow/` (the URL keeps the former name
 
 Articles, pages and Git diffs remain directly auditable. AI operating rules live in `ai/governance.md`; routing lives in `ai/repo-map.json`.
 
-The author owns lived experience, architectural position, editorial voice and material publication acceptance. AI must never fabricate those inputs.
+The author owns lived experience, architectural position, editorial voice and correction after publication. AI must never fabricate those inputs.

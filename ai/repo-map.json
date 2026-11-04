@@ -11,6 +11,5 @@
     "python3 ../agent-core/shared/run_tests.py",
     "python3 tools/health_check.py --strict",
     "sh tools/jekyll_build.sh"
-  ],
-  "pending_acceptance": "ai/pending.md"
+  ]
 }

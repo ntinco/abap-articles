@@ -1,3 +1,0 @@
-# Pending acceptance
-
-None recorded.

@@ -4,7 +4,7 @@
   "routing": {
     "write_or_edit_article": ["prompts/editorial-voice.md", "_posts/"],
     "translation_sync": ["_posts/"],
-    "publishing_mechanics": ["_posts/", "_layouts/", "index.html", "posts.md", "_config.yml", "posts/"],
+    "publishing_mechanics": ["_posts/", "_layouts/", "_includes/", "assets/css/style.scss", "index.html", "posts.md", "_config.yml", "ai/upstreams.json"],
     "editorial_voice_change": ["prompts/editorial-voice.md"]
   },
   "validators": [

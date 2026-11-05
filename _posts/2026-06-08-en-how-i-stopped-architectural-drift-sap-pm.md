@@ -5,11 +5,11 @@ date: 2026-06-08 00:00:00 +0000
 lang: en
 categories: [architecture]
 description: "How a responsibility taxonomy helped me stop architectural drift in a large SAP PM ABAP codebase."
-og_description: "A practical ABAP architecture decision: separating API, CLIENT, SERVICE, FACADE, and EXT responsibilities at scale."
-twitter_description: "How I made architecture visible again in SAP PM using responsibility-first ABAP naming."
 back_label: "Back to ABAP Craft"
 discuss_label: "Discuss this article"
 comments_intro: "Comments are powered by GitHub Discussions."
+redirect_from:
+  - /posts/en-how-i-stopped-architectural-drift-sap-pm.html
 translations:
   - lang: en
     label: English

@@ -9,9 +9,9 @@ Website: `https://nor001.github.io/ABAP_Keyflow/` (the URL keeps the former name
 ## Publication plane
 
 - `_posts/` — canonical article sources.
-- `_layouts/` — article/redirect presentation.
+- `_layouts/`, `_includes/`, `assets/css/style.scss` — overlays on the stock cayman theme (`ai/upstreams.json`).
 - `index.html` and `posts.md` — public navigation/listing.
-- `posts/` — legacy redirects only.
+- Legacy URLs are `redirect_from` entries of the canonical post (jekyll-redirect-from); SEO meta, feed and sitemap come from the stock GitHub Pages plugins.
 - `prompts/editorial-voice.md` — human-owned voice/positioning guidance.
 - `prompts/templates/` — reusable article/front-matter input shapes.
 

@@ -10,11 +10,11 @@ date: YYYY-MM-DD 00:00:00 +0000
 lang: en
 categories: [architecture]
 description: "<short architecture-focused summary>"
-og_description: "<optional override for OG>"
-twitter_description: "<optional override for Twitter>"
 back_label: "Back to ABAP Craft"
 discuss_label: "Discuss this article"
 comments_intro: "Comments are powered by GitHub Discussions."
+redirect_from:
+  - /posts/en-<slug>.html
 translations:
   - lang: en
     label: English
@@ -32,4 +32,6 @@ Notes:
 
 - Keep filenames lowercase and ASCII-only.
 - Keep `lang` and `translations` fully aligned.
+- `redirect_from` is optional: legacy URLs that must keep working (jekyll-redirect-from).
+- `description` feeds the page, Open Graph and Twitter meta (jekyll-seo-tag).
 - Localize the title, category, description, labels, and intro strings for DE and ES versions.

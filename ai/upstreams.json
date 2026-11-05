@@ -1,0 +1,50 @@
+{
+  "upstreams": [
+    {
+      "id": "cayman",
+      "source": "github:pages-themes/cayman",
+      "track": "release",
+      "pinned": "v0.2.0",
+      "reviewed": "2026-11-05",
+      "cadence_days": 180,
+      "what": "The site theme, fetched by jekyll-remote-theme at the tag `_config.yml` pins; our differences are overlays Jekyll layers over the theme: `assets/css/style.scss` (stock import, then the site's own components), `_includes/head-custom.html` (stock analytics include plus the feed link) and `_layouts/article.html` (built on the stock `default` layout). Deleting them leaves the stock theme working.",
+      "used_in": [
+        "_config.yml",
+        "assets/css/style.scss",
+        "_includes/head-custom.html",
+        "_layouts/article.html",
+        "index.html"
+      ],
+      "review": "Read the release notes and the diff of `_layouts/default.html`, `_includes/head-custom.html`, `assets/css/style.scss` and `_sass/variables.scss` between the pin and the new tag; bump `remote_theme` in `_config.yml`, recheck each overlay against the new stock file (the variables style.scss uses must still exist), run the validators (the Docker build), then --mark with the new tag."
+    },
+    {
+      "id": "github-pages-jekyll",
+      "source": "github:actions/jekyll-build-pages",
+      "track": "release",
+      "pinned": "v1.0.13",
+      "reviewed": "2026-11-05",
+      "cadence_days": 90,
+      "what": "The Jekyll build image (github-pages gem 232) and the plugin versions it ships: jekyll-remote-theme, jekyll-seo-tag, jekyll-feed, jekyll-sitemap, jekyll-redirect-from, all used at stock defaults from `_config.yml`. Dependabot bumps the workflow's SHA pin; `tools/jekyll_build.sh` follows it.",
+      "used_in": [
+        "_config.yml",
+        ".github/workflows/jekyll-gh-pages.yml",
+        "tools/jekyll_build.sh"
+      ],
+      "review": "Read the release notes and the github-pages gem's dependency versions for the five plugins; check the seo tags, feed.xml, sitemap.xml and the `/posts/*.html` redirect pages in the Docker build output, then --mark with the new tag (Dependabot's pull request carries the pin)."
+    },
+    {
+      "id": "pages-jekyll-workflow",
+      "source": "github:actions/starter-workflows",
+      "track": "commit",
+      "path": "pages/jekyll-gh-pages.yml",
+      "pinned": "22770e21c6986ed08a3aa400bdcc6a9a75ecdaf2",
+      "reviewed": "2026-11-05",
+      "cadence_days": 180,
+      "what": "`.github/workflows/jekyll-gh-pages.yml`, copied from the GitHub Pages Jekyll starter workflow; our differences are SHA-pinned actions with version comments and least-privilege job permissions.",
+      "used_in": [
+        ".github/workflows/jekyll-gh-pages.yml"
+      ],
+      "review": "Diff the starter workflow between the pin and the new commit; copy in changed steps, triggers or permissions while keeping the SHA pins and least-privilege tokens, run the validators, then --mark with the new commit."
+    }
+  ]
+}

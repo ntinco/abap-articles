@@ -1,227 +1,139 @@
 ---
+layout: default
 ---
 {% assign en_post = site.posts | where: "lang", "en" | first %}
 {% assign de_post = site.posts | where: "lang", "de" | first %}
 {% assign es_post = site.posts | where: "lang", "es" | first %}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ site.title }}</title>
-  <meta name="description" content="Architecture notes from real SAP PM and ABAP systems. ABAP Craft documents how to keep large custom ABAP codebases understandable over time.">
-  <meta name="author" content="{{ site.author.name }}">
-  <meta property="og:title" content="{{ site.title }}">
-  <meta property="og:description" content="{{ site.description }}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ site.url }}{{ site.baseurl }}/">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="{{ site.title }}">
-  <meta name="twitter:description" content="{{ site.description }}">
-  <link rel="canonical" href="{{ site.url }}{{ site.baseurl }}/">
-  <style>
-    :root {
-      --bg: #0f172a;
-      --text: #e5e7eb;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --line: #1f2937;
-      --card: #020617;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: linear-gradient(180deg, var(--bg), #020617 65%);
-      color: var(--text);
-      line-height: 1.6;
-    }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    header { padding: 72px 24px 48px; border-bottom: 1px solid var(--line); }
-    .wrap { max-width: 980px; margin: 0 auto; }
-    .topbar { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 32px; }
-    .eyebrow { color: var(--accent); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; }
-    .language-switcher { display: flex; gap: 8px; flex-wrap: wrap; }
-    .language-switcher button {
-      cursor: pointer;
-      border: 1px solid #334155;
-      background: rgba(2, 6, 23, .6);
-      color: #cbd5e1;
-      padding: 7px 11px;
-      border-radius: 999px;
-      font-weight: 700;
-    }
-    .language-switcher button.active { background: var(--accent); color: #082f49; border-color: var(--accent); }
-    h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1; margin: 16px 0 20px; }
-    .lead { font-size: clamp(18px, 2.5vw, 24px); color: var(--muted); max-width: 760px; }
-    main { padding: 40px 24px 80px; }
-    section { margin: 44px 0; }
-    h2 { font-size: 30px; margin-bottom: 16px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
-    .card { background: rgba(2, 6, 23, .78); border: 1px solid var(--line); border-radius: 18px; padding: 22px; box-shadow: 0 18px 60px rgba(0,0,0,.25); }
-    .card h3 { margin-top: 0; font-size: 21px; }
-    .muted { color: var(--muted); }
-    .pill { display: inline-block; border: 1px solid #334155; color: #cbd5e1; padding: 6px 10px; border-radius: 999px; margin: 4px 6px 4px 0; font-size: 14px; }
-    .cta { display: inline-block; margin-top: 10px; padding: 10px 14px; border-radius: 12px; background: var(--accent); color: #082f49; font-weight: 700; }
-    .cta:hover { text-decoration: none; filter: brightness(1.05); }
-    .lang-view { display: none; }
-    .lang-view.active { display: block; }
-    .latest { list-style: none; padding: 0; margin: 0; }
-    .latest li { padding: 12px 0; border-bottom: 1px solid var(--line); }
-    footer { border-top: 1px solid var(--line); padding: 28px 24px; color: var(--muted); }
-    @media (max-width: 640px) { .topbar { align-items: flex-start; flex-direction: column; } }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="wrap">
-      <div class="topbar">
-        <div class="eyebrow">SAP PM · ABAP Architecture · Integration Design</div>
-        <div class="language-switcher" aria-label="Language selector">
-          <button type="button" data-set-lang="en">EN</button>
-          <button type="button" data-set-lang="de">DE</button>
-          <button type="button" data-set-lang="es">ES</button>
-        </div>
-      </div>
+<div class="language-switcher" aria-label="Language selector">
+  <button type="button" class="pill" data-set-lang="en">EN</button>
+  <button type="button" class="pill" data-set-lang="de">DE</button>
+  <button type="button" class="pill" data-set-lang="es">ES</button>
+</div>
 
-      <div class="lang-view" data-lang="en">
-        <h1>{{ site.title }}</h1>
-        <p class="lead">Architecture notes from real SAP PM and ABAP systems. Focused on keeping large custom ABAP codebases understandable after years of integrations, change requests, and team rotation.</p>
-        {% if en_post %}<a class="cta" href="{{ en_post.url | relative_url }}">Read the featured article</a>{% endif %}
-      </div>
+<div class="lang-view" data-lang="en">
+  <p class="lead">Architecture notes from real SAP PM and ABAP systems. Focused on keeping large custom ABAP codebases understandable after years of integrations, change requests, and team rotation.</p>
+  {% if en_post %}<a class="cta" href="{{ en_post.url | relative_url }}">Read the featured article</a>{% endif %}
+</div>
 
-      <div class="lang-view" data-lang="de">
-        <h1>{{ site.title }}</h1>
-        <p class="lead">Architekturnotizen aus realen SAP-PM- und ABAP-Systemen. Der Fokus liegt darauf, große kundeneigene ABAP-Codebasen auch nach Jahren von Integrationen, Changes und Teamrotation verständlich zu halten.</p>
-        {% if de_post %}<a class="cta" href="{{ de_post.url | relative_url }}">Artikel lesen</a>{% endif %}
-      </div>
+<div class="lang-view" data-lang="de">
+  <p class="lead">Architekturnotizen aus realen SAP-PM- und ABAP-Systemen. Der Fokus liegt darauf, große kundeneigene ABAP-Codebasen auch nach Jahren von Integrationen, Changes und Teamrotation verständlich zu halten.</p>
+  {% if de_post %}<a class="cta" href="{{ de_post.url | relative_url }}">Artikel lesen</a>{% endif %}
+</div>
 
-      <div class="lang-view" data-lang="es">
-        <h1>{{ site.title }}</h1>
-        <p class="lead">Notas de arquitectura desde sistemas SAP PM y ABAP reales. Enfocado en mantener codebases ABAP grandes entendibles después de años de integraciones, cambios y rotación de equipos.</p>
-        {% if es_post %}<a class="cta" href="{{ es_post.url | relative_url }}">Leer artículo destacado</a>{% endif %}
-      </div>
+<div class="lang-view" data-lang="es">
+  <p class="lead">Notas de arquitectura desde sistemas SAP PM y ABAP reales. Enfocado en mantener codebases ABAP grandes entendibles después de años de integraciones, cambios y rotación de equipos.</p>
+  {% if es_post %}<a class="cta" href="{{ es_post.url | relative_url }}">Leer artículo destacado</a>{% endif %}
+</div>
+
+<div class="lang-view" data-lang="en">
+  <section>
+    <h2>Featured article</h2>
+    <div class="card">
+      <h3>{% if en_post %}<a href="{{ en_post.url | relative_url }}">{{ en_post.title }}</a>{% endif %}</h3>
+      <p class="muted">After 13 years working on SAP systems, I have seen the same pattern repeat: a custom codebase starts clean, grows to 80+ classes, and later nobody can clearly explain what each class is responsible for.</p>
+      <p>This article explains how I used class responsibility taxonomy to make architecture visible again.</p>
+      <p>
+        {% if en_post %}<a class="cta" href="{{ en_post.url | relative_url }}">English</a>{% endif %}
+        {% if de_post %}<a class="cta" href="{{ de_post.url | relative_url }}">Deutsch</a>{% endif %}
+        {% if es_post %}<a class="cta" href="{{ es_post.url | relative_url }}">Español</a>{% endif %}
+      </p>
     </div>
-  </header>
+  </section>
+  <section>
+    <h2>Topics</h2>
+    <span class="pill">ABAP Architecture</span><span class="pill">SAP PM</span><span class="pill">Integration Boundaries</span><span class="pill">Clean ABAP</span><span class="pill">Legacy Systems</span><span class="pill">Technical Leadership</span>
+  </section>
+  <section>
+    <h2>Latest articles</h2>
+    <ul class="latest">
+      {% for post in site.posts %}
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> <span class="muted">· {{ post.date | date: "%Y-%m-%d" }}{% if post.lang %} · {{ post.lang | upcase }}{% endif %}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
 
-  <main>
-    <div class="wrap">
-      <div class="lang-view" data-lang="en">
-        <section>
-          <h2>Featured article</h2>
-          <div class="card">
-            <h3>{% if en_post %}<a href="{{ en_post.url | relative_url }}">{{ en_post.title }}</a>{% endif %}</h3>
-            <p class="muted">After 13 years working on SAP systems, I have seen the same pattern repeat: a custom codebase starts clean, grows to 80+ classes, and later nobody can clearly explain what each class is responsible for.</p>
-            <p>This article explains how I used class responsibility taxonomy to make architecture visible again.</p>
-            <p>
-              {% if en_post %}<a class="cta" href="{{ en_post.url | relative_url }}">English</a>{% endif %}
-              {% if de_post %}<a class="cta" href="{{ de_post.url | relative_url }}">Deutsch</a>{% endif %}
-              {% if es_post %}<a class="cta" href="{{ es_post.url | relative_url }}">Español</a>{% endif %}
-            </p>
-          </div>
-        </section>
-        <section>
-          <h2>Topics</h2>
-          <span class="pill">ABAP Architecture</span><span class="pill">SAP PM</span><span class="pill">Integration Boundaries</span><span class="pill">Clean ABAP</span><span class="pill">Legacy Systems</span><span class="pill">Technical Leadership</span>
-        </section>
-        <section>
-          <h2>Latest articles</h2>
-          <ul class="latest">
-            {% for post in site.posts %}
-              <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> <span class="muted">· {{ post.date | date: "%Y-%m-%d" }}{% if post.lang %} · {{ post.lang | upcase }}{% endif %}</span></li>
-            {% endfor %}
-          </ul>
-        </section>
-      </div>
-
-      <div class="lang-view" data-lang="de">
-        <section>
-          <h2>Empfohlener Artikel</h2>
-          <div class="card">
-            <h3>{% if de_post %}<a href="{{ de_post.url | relative_url }}">{{ de_post.title }}</a>{% endif %}</h3>
-            <p class="muted">Nach 13 Jahren Arbeit mit SAP-Systemen habe ich dasselbe Muster immer wieder gesehen: Eine kundeneigene Codebasis startet sauber, wächst auf 80+ Klassen und später kann niemand mehr klar erklären, wofür jede Klasse verantwortlich ist.</p>
-            <p>Der Artikel erklärt, wie ich mit einer Verantwortungstaxonomie für Klassen die Architektur wieder sichtbar gemacht habe.</p>
-            <p>
-              {% if de_post %}<a class="cta" href="{{ de_post.url | relative_url }}">Deutsch</a>{% endif %}
-              {% if en_post %}<a class="cta" href="{{ en_post.url | relative_url }}">English</a>{% endif %}
-              {% if es_post %}<a class="cta" href="{{ es_post.url | relative_url }}">Español</a>{% endif %}
-            </p>
-          </div>
-        </section>
-        <section>
-          <h2>Themen</h2>
-          <span class="pill">ABAP-Architektur</span><span class="pill">SAP PM</span><span class="pill">Integrationsgrenzen</span><span class="pill">Clean ABAP</span><span class="pill">Legacy-Systeme</span><span class="pill">Technische Führung</span>
-        </section>
-        <section>
-          <h2>Neueste Artikel</h2>
-          <ul class="latest">
-            {% for post in site.posts %}
-              <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> <span class="muted">· {{ post.date | date: "%Y-%m-%d" }}{% if post.lang %} · {{ post.lang | upcase }}{% endif %}</span></li>
-            {% endfor %}
-          </ul>
-        </section>
-      </div>
-
-      <div class="lang-view" data-lang="es">
-        <section>
-          <h2>Artículo destacado</h2>
-          <div class="card">
-            <h3>{% if es_post %}<a href="{{ es_post.url | relative_url }}">{{ es_post.title }}</a>{% endif %}</h3>
-            <p class="muted">Después de 13 años trabajando con sistemas SAP, he visto repetirse el mismo patrón: una codebase custom empieza limpia, crece a 80+ clases y después nadie puede explicar claramente de qué es responsable cada clase.</p>
-            <p>El artículo explica cómo usé una taxonomía de responsabilidades para volver visible la arquitectura.</p>
-            <p>
-              {% if es_post %}<a class="cta" href="{{ es_post.url | relative_url }}">Español</a>{% endif %}
-              {% if en_post %}<a class="cta" href="{{ en_post.url | relative_url }}">English</a>{% endif %}
-              {% if de_post %}<a class="cta" href="{{ de_post.url | relative_url }}">Deutsch</a>{% endif %}
-            </p>
-          </div>
-        </section>
-        <section>
-          <h2>Temas</h2>
-          <span class="pill">Arquitectura ABAP</span><span class="pill">SAP PM</span><span class="pill">Límites de integración</span><span class="pill">Clean ABAP</span><span class="pill">Sistemas legacy</span><span class="pill">Liderazgo técnico</span>
-        </section>
-        <section>
-          <h2>Últimos artículos</h2>
-          <ul class="latest">
-            {% for post in site.posts %}
-              <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> <span class="muted">· {{ post.date | date: "%Y-%m-%d" }}{% if post.lang %} · {{ post.lang | upcase }}{% endif %}</span></li>
-            {% endfor %}
-          </ul>
-        </section>
-      </div>
+<div class="lang-view" data-lang="de">
+  <section>
+    <h2>Empfohlener Artikel</h2>
+    <div class="card">
+      <h3>{% if de_post %}<a href="{{ de_post.url | relative_url }}">{{ de_post.title }}</a>{% endif %}</h3>
+      <p class="muted">Nach 13 Jahren Arbeit mit SAP-Systemen habe ich dasselbe Muster immer wieder gesehen: Eine kundeneigene Codebasis startet sauber, wächst auf 80+ Klassen und später kann niemand mehr klar erklären, wofür jede Klasse verantwortlich ist.</p>
+      <p>Der Artikel erklärt, wie ich mit einer Verantwortungstaxonomie für Klassen die Architektur wieder sichtbar gemacht habe.</p>
+      <p>
+        {% if de_post %}<a class="cta" href="{{ de_post.url | relative_url }}">Deutsch</a>{% endif %}
+        {% if en_post %}<a class="cta" href="{{ en_post.url | relative_url }}">English</a>{% endif %}
+        {% if es_post %}<a class="cta" href="{{ es_post.url | relative_url }}">Español</a>{% endif %}
+      </p>
     </div>
-  </main>
+  </section>
+  <section>
+    <h2>Themen</h2>
+    <span class="pill">ABAP-Architektur</span><span class="pill">SAP PM</span><span class="pill">Integrationsgrenzen</span><span class="pill">Clean ABAP</span><span class="pill">Legacy-Systeme</span><span class="pill">Technische Führung</span>
+  </section>
+  <section>
+    <h2>Neueste Artikel</h2>
+    <ul class="latest">
+      {% for post in site.posts %}
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> <span class="muted">· {{ post.date | date: "%Y-%m-%d" }}{% if post.lang %} · {{ post.lang | upcase }}{% endif %}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
 
-  <footer><div class="wrap">© 2026 {{ site.title }} · Built with GitHub Pages and Jekyll</div></footer>
+<div class="lang-view" data-lang="es">
+  <section>
+    <h2>Artículo destacado</h2>
+    <div class="card">
+      <h3>{% if es_post %}<a href="{{ es_post.url | relative_url }}">{{ es_post.title }}</a>{% endif %}</h3>
+      <p class="muted">Después de 13 años trabajando con sistemas SAP, he visto repetirse el mismo patrón: una codebase custom empieza limpia, crece a 80+ clases y después nadie puede explicar claramente de qué es responsable cada clase.</p>
+      <p>El artículo explica cómo usé una taxonomía de responsabilidades para volver visible la arquitectura.</p>
+      <p>
+        {% if es_post %}<a class="cta" href="{{ es_post.url | relative_url }}">Español</a>{% endif %}
+        {% if en_post %}<a class="cta" href="{{ en_post.url | relative_url }}">English</a>{% endif %}
+        {% if de_post %}<a class="cta" href="{{ de_post.url | relative_url }}">Deutsch</a>{% endif %}
+      </p>
+    </div>
+  </section>
+  <section>
+    <h2>Temas</h2>
+    <span class="pill">Arquitectura ABAP</span><span class="pill">SAP PM</span><span class="pill">Límites de integración</span><span class="pill">Clean ABAP</span><span class="pill">Sistemas legacy</span><span class="pill">Liderazgo técnico</span>
+  </section>
+  <section>
+    <h2>Últimos artículos</h2>
+    <ul class="latest">
+      {% for post in site.posts %}
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> <span class="muted">· {{ post.date | date: "%Y-%m-%d" }}{% if post.lang %} · {{ post.lang | upcase }}{% endif %}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
 
-  <script>
-    (function () {
-      var supported = ['en', 'de', 'es'];
-      var stored = localStorage.getItem('abapKeyflowLang');
-      var browser = (navigator.language || navigator.userLanguage || 'en').slice(0, 2).toLowerCase();
-      var lang = supported.includes(stored) ? stored : (supported.includes(browser) ? browser : 'en');
+<script>
+  (function () {
+    var supported = ['en', 'de', 'es'];
+    var stored = localStorage.getItem('abapKeyflowLang');
+    var browser = (navigator.language || navigator.userLanguage || 'en').slice(0, 2).toLowerCase();
+    var lang = supported.includes(stored) ? stored : (supported.includes(browser) ? browser : 'en');
 
-      function setLanguage(nextLang) {
-        if (!supported.includes(nextLang)) nextLang = 'en';
-        document.documentElement.lang = nextLang;
-        localStorage.setItem('abapKeyflowLang', nextLang);
-        document.querySelectorAll('.lang-view').forEach(function (el) {
-          el.classList.toggle('active', el.getAttribute('data-lang') === nextLang);
-        });
-        document.querySelectorAll('[data-set-lang]').forEach(function (button) {
-          button.classList.toggle('active', button.getAttribute('data-set-lang') === nextLang);
-        });
-      }
-
-      document.querySelectorAll('[data-set-lang]').forEach(function (button) {
-        button.addEventListener('click', function () {
-          setLanguage(button.getAttribute('data-set-lang'));
-        });
+    function setLanguage(nextLang) {
+      if (!supported.includes(nextLang)) nextLang = 'en';
+      document.documentElement.lang = nextLang;
+      localStorage.setItem('abapKeyflowLang', nextLang);
+      document.querySelectorAll('.lang-view').forEach(function (el) {
+        el.classList.toggle('active', el.getAttribute('data-lang') === nextLang);
       });
+      document.querySelectorAll('[data-set-lang]').forEach(function (button) {
+        button.classList.toggle('active', button.getAttribute('data-set-lang') === nextLang);
+      });
+    }
 
-      setLanguage(lang);
-    }());
-  </script>
-</body>
-</html>
+    document.querySelectorAll('[data-set-lang]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        setLanguage(button.getAttribute('data-set-lang'));
+      });
+    });
+
+    setLanguage(lang);
+  }());
+</script>

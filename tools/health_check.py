@@ -16,8 +16,8 @@ NOTICE_ON_SKIP = {"workspace_contract"}
 LANGS = {"en", "de", "es"}
 REQUIRED = [
     "AGENTS.md", "README.md", "ai/governance.md", "ai/repo-map.json",
-    "_posts", "_layouts/article.html", "_layouts/redirect.html", "index.html", "posts.md", "_config.yml",
-    "posts", "prompts/README.md", "prompts/editorial-voice.md", "prompts/templates",
+    "_posts", "_layouts/article.html", "_includes/head-custom.html", "assets/css/style.scss", "index.html", "posts.md",
+    "_config.yml", "ai/upstreams.json", "prompts/README.md", "prompts/editorial-voice.md", "prompts/templates",
     "tools/health_check.py", "tests/test_health_check.py", ".github/workflows/jekyll-gh-pages.yml",
 ]
 FORBIDDEN_CONTROL = [
@@ -31,6 +31,10 @@ FORBIDDEN_CONTROL = [
     "prompts/simulations",
     "docs/rag-content-strategy.md",
     "docs/simple-content-system.md",
+    # Legacy URLs are `redirect_from` entries of the canonical post (jekyll-redirect-from); a local `redirect` layout
+    # would replace the plugin's stock redirect page.
+    "posts",
+    "_layouts/redirect.html",
 ]
 
 
@@ -144,20 +148,33 @@ def post_permalinks(root: Path) -> set[str]:
     return urls
 
 
+def block_list(fm: str, key: str) -> list[str]:
+    """Items of a YAML block list (`key:` then `  - item` lines; a trailing `# comment` is ignored), or a scalar `key: item`."""
+    match = re.search(rf"(?m)^{re.escape(key)}:[ \t]*(.*)\n((?:[ \t]+-[ \t]*.*\n?)*)", fm)
+    if not match:
+        return []
+    inline = re.sub(r"(^|\s)#.*$", "", match.group(1)).strip()
+    if inline:
+        return [inline.strip('"\'')]
+    return [re.sub(r"^\s*-\s*", "", line).strip().strip('"\'') for line in match.group(2).splitlines() if line.strip()]
+
+
 def redirect_contracts(root: Path) -> dict[str, object]:
+    """Each legacy URL is a site-local `redirect_from` entry of one canonical post, never a post's own URL."""
     problems: list[str] = []
     permalinks = post_permalinks(root)
-    for path in sorted((root / "posts").glob("*.html")):
-        fm, body = front_matter(path.read_text(encoding="utf-8"))
-        if scalar(fm, "layout") != "redirect":
-            problems.append(f"{path.name}: layout must be redirect")
-        target = scalar(fm, "redirect_to")
-        if not target.startswith("/"):
-            problems.append(f"{path.name}: redirect_to must be a site-local canonical path")
-        elif target not in permalinks:
-            problems.append(f"{path.name}: redirect_to {target} is not a canonical post permalink")
-        if body.strip():
-            problems.append(f"{path.name}: redirect must not duplicate article body")
+    seen: dict[str, str] = {}
+    for path in sorted((root / "_posts").glob("*.md")):
+        fm, _ = front_matter(path.read_text(encoding="utf-8"))
+        for source in block_list(fm, "redirect_from"):
+            if not source.startswith("/") or source.startswith("//"):
+                problems.append(f"{path.name}: redirect_from {source!r} must be a site-local path")
+            elif source in permalinks:
+                problems.append(f"{path.name}: redirect_from {source} is a canonical post permalink")
+            elif source in seen:
+                problems.append(f"{path.name}: redirect_from {source} already redirects to {seen[source]}")
+            else:
+                seen[source] = path.name
     return result("redirect_contracts", problems)
 
 

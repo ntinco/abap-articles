@@ -26,7 +26,8 @@ AI-operated:
 
 - Content work starts from the source material supplied/approved by the human; that material is the authority for every claim.
 - Translation work treats the approved source-language article as the claims authority and preserves argument and technical meaning. English is the default source language unless the human explicitly chooses another workflow.
-- `_posts/*.md` is the canonical article content. `posts/*.html` are compatibility redirects; never duplicate article bodies there.
+- `_posts/*.md` is the canonical article content. A legacy URL is a `redirect_from` entry of its post (jekyll-redirect-from); never duplicate article bodies elsewhere.
+- Presentation is the stock cayman theme and the stock GitHub Pages plugins (jekyll-seo-tag, jekyll-feed, jekyll-sitemap, jekyll-redirect-from); our differences are overlays registered in `ai/upstreams.json`, never a hand-written copy of what a plugin or the theme renders.
 - `prompts/editorial-voice.md` is human-owned editorial input that is costly to reconstruct, not a second governance surface; change it only when the human explicitly asks.
 - `prompts/templates/` holds reusable input/front-matter shapes, not policy.
 
@@ -50,7 +51,7 @@ Generic/anonymized examples such as `ZXX_*`, `SYSTEM_A`, `SYSTEM_B`, `MIDDLEWARE
 
 - Published article sets maintain EN/DE/ES variants with the same architectural argument.
 - Public URLs should remain stable when practical.
-- Filenames and slugs, front matter, layout, translation links, the visible production-protection note and redirect shape are specified and enforced by `tools/health_check.py`.
+- Filenames and slugs, front matter, layout, translation links, the visible production-protection note and `redirect_from` sources are specified and enforced by `tools/health_check.py`.
 - Do not machine-score editorial quality; validate mechanical publication contracts only.
 - Secrets are scanned by gitleaks, not by `tools/health_check.py`: locally by the workspace's shared pre-commit hook on every staged tree, and in CI by `.github/workflows/health-check.yml` on every push and pull request.
 - GitHub Actions are pinned by full commit SHA (version in a trailing comment), every workflow token is read-only unless a job declares more, and Dependabot (`.github/dependabot.yml`) bumps the pins by pull request.

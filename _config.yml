@@ -5,8 +5,13 @@ url: "https://nor001.github.io"
 lang: en
 
 remote_theme: pages-themes/cayman@v0.2.0
+# Stock GitHub Pages plugins, at the versions the pinned jekyll-build-pages image ships.
 plugins:
   - jekyll-remote-theme
+  - jekyll-seo-tag
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-redirect-from
 
 show_downloads: false
 google_analytics:
@@ -28,5 +33,13 @@ author:
   name: Norman Neri
   github: nor001
 
+# The control plane is not part of the public site (nor of its sitemap).
 exclude:
   - README.md
+  - AGENTS.md
+  - CLAUDE.md
+  - abap-craft.code-workspace
+  - ai
+  - prompts
+  - tests
+  - tools

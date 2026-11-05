@@ -34,13 +34,13 @@ translations:
             (posts / "2026-01-01-en-test.md").write_text(fm, encoding="utf-8")
             self.assertEqual(health_check.post_contracts(root)["status"], "fail")
 
-    def test_redirect_cannot_duplicate_article_body(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            redirects = root / "posts"
-            redirects.mkdir()
-            (redirects / "old.html").write_text("---\nlayout: redirect\nredirect_to: /new/\n---\narticle body\n", encoding="utf-8")
-            self.assertEqual(health_check.redirect_contracts(root)["status"], "fail")
+    def test_local_redirect_pages_and_layout_are_forbidden(self):
+        for surface in ("posts", "_layouts/redirect.html"):
+            with self.subTest(surface=surface), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                (root / surface).parent.mkdir(parents=True, exist_ok=True)
+                (root / surface).mkdir() if surface == "posts" else (root / surface).write_text("x", encoding="utf-8")
+                self.assertEqual(health_check.forbidden_surfaces(root)["detail"], [surface])
 
     def test_provider_specific_control_surface_is_forbidden(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -119,46 +119,47 @@ class PostContractTests(unittest.TestCase):
 
 
 class RedirectContractTests(unittest.TestCase):
-    TARGET = "/architecture/2026/01/01/en-test/"
-
-    def problems(self, redirect: str, post: str = article("en")) -> list[str]:
+    def problems(self, sources: list[str], post: str = article("en"), other: list[str] | None = None) -> list[str]:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "_posts").mkdir()
-            (root / "posts").mkdir()
-            (root / "_posts/2026-01-01-en-test.md").write_text(post, encoding="utf-8")
-            (root / "posts/old.html").write_text(redirect, encoding="utf-8")
+            block = "redirect_from:\n" + "".join(f"  - {s}\n" for s in sources)
+            (root / "_posts/2026-01-01-en-test.md").write_text(post.replace("translations:\n", block + "translations:\n"), encoding="utf-8")
+            if other is not None:
+                block = "redirect_from:\n" + "".join(f"  - {s}\n" for s in other)
+                (root / "_posts/2026-01-01-de-test.md").write_text(article("de").replace("translations:\n", block + "translations:\n"), encoding="utf-8")
             detail = health_check.redirect_contracts(root)["detail"]
             return [] if detail == "ok" else detail
 
-    def test_redirect_to_a_post_permalink_passes(self):
-        self.assertEqual(self.problems(f"---\nlayout: redirect\nredirect_to: {self.TARGET}\n---\n\n"), [])
+    def test_site_local_legacy_urls_pass(self):
+        self.assertEqual(self.problems(["/posts/en-test.html", '"/old/"']), [])
 
-    def test_redirect_layout_and_site_local_target_are_required(self):
-        self.assertEqual(self.problems(f"---\nlayout: article\nredirect_to: {self.TARGET}\n---\n"),
-                         ["old.html: layout must be redirect"])
-        for target in ("", "https://example.com/new/", "new/"):
-            with self.subTest(target=target):
-                self.assertEqual(self.problems(f"---\nlayout: redirect\nredirect_to: {target}\n---\n"),
-                                 ["old.html: redirect_to must be a site-local canonical path"])
+    def test_comment_after_the_key_is_ignored(self):
+        self.assertEqual(health_check.block_list("redirect_from:  # legacy URLs\n  - /old/\n", "redirect_from"), ["/old/"])
 
-    def test_redirect_must_reach_an_existing_permalink(self):
-        for target in ("/tutorial/2026/01/01/en-test/", "/architecture/2026/01/02/en-test/", "/architecture/2026/01/01/en-other/"):
-            with self.subTest(target=target):
-                self.assertEqual(self.problems(f"---\nlayout: redirect\nredirect_to: {target}\n---\n"),
-                                 [f"old.html: redirect_to {target} is not a canonical post permalink"])
+    def test_redirect_source_must_be_site_local(self):
+        for source in ("https://example.com/old/", "old.html", "//example.com/old/"):
+            with self.subTest(source=source):
+                self.assertEqual(self.problems([source]),
+                                 [f"2026-01-01-en-test.md: redirect_from {source!r} must be a site-local path"])
 
-    def test_permalink_follows_jekyll_categories_and_overrides(self):
+    def test_redirect_source_cannot_be_a_post_permalink(self):
         cases = [
+            ("/architecture/2026/01/01/en-test/", article("en")),
             ("/sap/pm/2026/01/01/en-test/", article("en", category="SAP, pm")),
             ("/sap/pm/2026/01/01/en-test/", article("en", categories="sap pm")),
             ("/architecture/2026/01/01/renamed/", article("en", slug="renamed")),
             ("/fixed/", article("en", permalink="/fixed/")),
             ("/architecture/2026/01/01/en-test/", article("en", date="unparsed")),
         ]
-        for target, post in cases:
+        for source, post in cases:
             with self.subTest(post=post.splitlines()[1:7]):
-                self.assertEqual(self.problems(f"---\nlayout: redirect\nredirect_to: {target}\n---\n", post), [])
+                self.assertEqual(self.problems([source], post),
+                                 [f"2026-01-01-en-test.md: redirect_from {source} is a canonical post permalink"])
+
+    def test_redirect_source_belongs_to_one_post(self):
+        self.assertEqual(self.problems(["/old/"], other=["/old/"]),
+                         ["2026-01-01-en-test.md: redirect_from /old/ already redirects to 2026-01-01-de-test.md"])
 
 
 class BriefTests(unittest.TestCase):

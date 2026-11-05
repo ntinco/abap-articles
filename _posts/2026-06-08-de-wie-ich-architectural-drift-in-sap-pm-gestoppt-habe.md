@@ -5,11 +5,11 @@ date: 2026-06-08 00:00:00 +0000
 lang: de
 categories: [architektur]
 description: "Wie eine klare Verantwortungstaxonomie in ABAP Architectural Drift in einer grossen SAP-PM-Codebasis reduziert hat."
-og_description: "Eine praktische ABAP-Architekturentscheidung: API, CLIENT, SERVICE, FACADE und EXT sauber trennen."
-twitter_description: "Wie ich Architektur in SAP PM wieder sichtbar gemacht habe - mit Verantwortung statt Zufall."
 back_label: "Zuruck zu ABAP Craft"
 discuss_label: "Diesen Artikel diskutieren"
 comments_intro: "Kommentare laufen uber GitHub Discussions."
+redirect_from:
+  - /posts/de-wie-ich-architectural-drift-in-sap-pm-gestoppt-habe.html
 translations:
   - lang: en
     label: English

@@ -53,6 +53,7 @@ Generic/anonymized examples such as `ZXX_*`, `SYSTEM_A`, `SYSTEM_B`, `MIDDLEWARE
 - Filenames and slugs, front matter, layout, translation links, the visible production-protection note and redirect shape are specified and enforced by `tools/health_check.py`.
 - Do not machine-score editorial quality; validate mechanical publication contracts only.
 - Secrets are scanned by gitleaks, not by `tools/health_check.py`: locally by the workspace's shared pre-commit hook on every staged tree, and in CI by `.github/workflows/health-check.yml` on every push and pull request.
+- GitHub Actions are pinned by full commit SHA (version in a trailing comment), every workflow token is read-only unless a job declares more, and Dependabot (`.github/dependabot.yml`) bumps the pins by pull request.
 
 ## Completion
 

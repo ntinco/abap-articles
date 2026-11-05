@@ -62,22 +62,28 @@ def article(lang: str, day: str = "2026-01-01", category: str = "architecture", 
     fields = {"layout": "article", "title": "Test", "date": f"{day} 00:00:00 +0000", "lang": lang,
               "categories": f"[{category}]", "description": "Test", **overrides}
     lines = [f"{key}: {value}" for key, value in fields.items()]
-    lines += ["translations:"] + [f"  - lang: {other}" for other in ("en", "de", "es")]
+    lines += ["translations:"] + [f"  - lang: {other}\n    url: /{category}/{day.replace('-', '/')}/{other}-test/"
+                                  for other in ("en", "de", "es")]
     return "---\n" + "\n".join(lines) + "\n---\n<p class=\"note\">safe</p>\n"
 
 
 class FrontMatterTests(unittest.TestCase):
-    def test_front_matter_splits_header_from_body(self):
-        self.assertEqual(health_check.front_matter("---\ntitle: A\n---\nbody\n"), ("title: A\n", "body\n"))
+    def test_front_matter_is_read_as_yaml(self):
+        self.assertEqual(health_check.front_matter('---\ntitle: "A"\ncategories: [x, y]\n---\nbody\n'),
+                         ({"title": "A", "categories": ["x", "y"]}, "body\n"))
 
     def test_unclosed_or_absent_front_matter_is_all_body(self):
         for text in ("title: A\nbody\n", "---\ntitle: A\nbody\n"):
-            self.assertEqual(health_check.front_matter(text), ("", text))
+            self.assertEqual(health_check.front_matter(text), ({}, text))
 
-    def test_scalar_strips_quotes_and_matches_whole_key(self):
-        self.assertEqual(health_check.scalar('title:  "A"  \n', "title"), "A")
-        self.assertEqual(health_check.scalar("lang: 'en'\n", "lang"), "en")
-        self.assertEqual(health_check.scalar("language: de\n", "lang"), "")
+    def test_invalid_yaml_is_a_problem_not_a_crash(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "_posts").mkdir()
+            (root / "_posts/2026-01-01-en-test.md").write_text("---\ntitle: [unclosed\n---\nbody\n", encoding="utf-8")
+            for check in (health_check.post_contracts, health_check.redirect_contracts):
+                detail = check(root)["detail"]
+                self.assertTrue(any("front matter is not valid YAML" in d for d in detail), detail)
 
 
 class PostContractTests(unittest.TestCase):
@@ -123,7 +129,7 @@ class RedirectContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "_posts").mkdir()
-            block = "redirect_from:\n" + "".join(f"  - {s}\n" for s in sources)
+            block = "redirect_from:\n" + "".join(f"  - {s}\n" for s in sources) if sources else ""
             (root / "_posts/2026-01-01-en-test.md").write_text(post.replace("translations:\n", block + "translations:\n"), encoding="utf-8")
             if other is not None:
                 block = "redirect_from:\n" + "".join(f"  - {s}\n" for s in other)
@@ -135,7 +141,13 @@ class RedirectContractTests(unittest.TestCase):
         self.assertEqual(self.problems(["/posts/en-test.html", '"/old/"']), [])
 
     def test_comment_after_the_key_is_ignored(self):
-        self.assertEqual(health_check.block_list("redirect_from:  # legacy URLs\n  - /old/\n", "redirect_from"), ["/old/"])
+        post = article("en").replace("translations:\n", "redirect_from:  # legacy URLs\n  - /old/\ntranslations:\n")
+        self.assertEqual(self.problems([], post, other=["/old/"]),
+                         ["2026-01-01-en-test.md: redirect_from /old/ already redirects to 2026-01-01-de-test.md"])
+
+    def test_scalar_redirect_source_is_checked(self):
+        post = article("en").replace("translations:\n", "redirect_from: old.html\ntranslations:\n")
+        self.assertEqual(self.problems([], post), ["2026-01-01-en-test.md: redirect_from 'old.html' must be a site-local path"])
 
     def test_redirect_source_must_be_site_local(self):
         for source in ("https://example.com/old/", "old.html", "//example.com/old/"):
@@ -143,19 +155,11 @@ class RedirectContractTests(unittest.TestCase):
                 self.assertEqual(self.problems([source]),
                                  [f"2026-01-01-en-test.md: redirect_from {source!r} must be a site-local path"])
 
-    def test_redirect_source_cannot_be_a_post_permalink(self):
-        cases = [
-            ("/architecture/2026/01/01/en-test/", article("en")),
-            ("/sap/pm/2026/01/01/en-test/", article("en", category="SAP, pm")),
-            ("/sap/pm/2026/01/01/en-test/", article("en", categories="sap pm")),
-            ("/architecture/2026/01/01/renamed/", article("en", slug="renamed")),
-            ("/fixed/", article("en", permalink="/fixed/")),
-            ("/architecture/2026/01/01/en-test/", article("en", date="unparsed")),
-        ]
-        for source, post in cases:
-            with self.subTest(post=post.splitlines()[1:7]):
-                self.assertEqual(self.problems([source], post),
-                                 [f"2026-01-01-en-test.md: redirect_from {source} is a canonical post permalink"])
+    def test_redirect_source_cannot_be_a_post_url(self):
+        for source in ("/architecture/2026/01/01/en-test/", "/architecture/2026/01/01/de-test/"):
+            with self.subTest(source=source):
+                self.assertEqual(self.problems([source], other=[]),
+                                 [f"2026-01-01-en-test.md: redirect_from {source} is a canonical post URL"])
 
     def test_redirect_source_belongs_to_one_post(self):
         self.assertEqual(self.problems(["/old/"], other=["/old/"]),

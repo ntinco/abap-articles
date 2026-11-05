@@ -7,7 +7,7 @@
       "pinned": "v0.2.0",
       "reviewed": "2026-11-05",
       "cadence_days": 180,
-      "what": "The site theme, fetched by jekyll-remote-theme at the tag `_config.yml` pins; our differences are overlays Jekyll layers over the theme: `assets/css/style.scss` (stock import, then the site's own components), `_includes/head-custom.html` (stock analytics include plus the feed link) and `_layouts/article.html` (built on the stock `default` layout). Deleting them leaves the stock theme working.",
+      "what": "The site theme, fetched by jekyll-remote-theme at the tag `_config.yml` pins; our differences are overlays Jekyll layers over the theme: `assets/css/style.scss` (stock import, then the site's own components), `_includes/head-custom.html` (stock analytics include, the feed link and hreflang alternates for the translations) and `_layouts/article.html` (built on the stock `default` layout). Deleting them leaves the stock theme working.",
       "used_in": [
         "_config.yml",
         "assets/css/style.scss",
@@ -45,6 +45,34 @@
         ".github/workflows/jekyll-gh-pages.yml"
       ],
       "review": "Diff the starter workflow between the pin and the new commit; copy in changed steps, triggers or permissions while keeping the SHA pins and least-privilege tokens, run the validators, then --mark with the new commit."
+    },
+    {
+      "id": "pyyaml",
+      "source": "github:yaml/pyyaml",
+      "track": "tag",
+      "pinned": "6.0.3",
+      "reviewed": "2026-11-05",
+      "cadence_days": 180,
+      "what": "YAML reading of the posts' front matter in `tools/health_check.py`, at the pin `tools/requirements.txt` sets (the same as agent-core's); replaces a hand-written front-matter parser.",
+      "used_in": [
+        "tools/requirements.txt",
+        "tools/health_check.py",
+        ".github/workflows/health-check.yml"
+      ],
+      "review": "Read the changelog between the pin and the new tag; bump `tools/requirements.txt` together with agent-core's pin, run the validators, then --mark with the new tag."
+    },
+    {
+      "id": "html-proofer",
+      "source": "github:gjtorikian/html-proofer",
+      "track": "release",
+      "pinned": "v5.2.3",
+      "reviewed": "2026-11-05",
+      "cadence_days": 180,
+      "what": "Link, image and script checks of the built site, run at stock defaults (external links off) by `tools/jekyll_build.sh` inside the jekyll-build-pages image; it verifies the translation pills and hreflang URLs the posts declare, which `tools/health_check.py` no longer derives from a reimplementation of Jekyll permalinks.",
+      "used_in": [
+        "tools/jekyll_build.sh"
+      ],
+      "review": "Read the release notes between the pin and the new release (changed defaults, CLI flags such as --swap-urls); bump `proofer=` in `tools/jekyll_build.sh`, run the validators (the Docker build), then --mark with the new tag."
     }
   ]
 }

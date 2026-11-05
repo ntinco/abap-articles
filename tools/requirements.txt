@@ -1,0 +1,2 @@
+# tools/health_check.py reads post front matter with PyYAML (same pin as agent-core tools/requirements.txt).
+PyYAML==6.0.3

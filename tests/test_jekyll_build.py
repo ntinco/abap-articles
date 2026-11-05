@@ -1,6 +1,7 @@
 """Cheap checks of tools/jekyll_build.sh that need no Docker: it parses, passes shellcheck, mounts read-only and takes the image tag from the workflow pin."""
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
@@ -36,6 +37,13 @@ class JekyllBuildTests(unittest.TestCase):
         pinned = re.search(r"jekyll-build-pages@[0-9a-f]{40} # (v[\d.]+)", workflow.read_text(encoding="utf-8"))
         self.assertIsNotNone(pinned)
         self.assertEqual(result.stdout.strip(), pinned.group(1))
+
+    def test_html_proofer_pin_is_the_registered_one(self):
+        pinned = re.search(r"^proofer=(\S+)$", SCRIPT.read_text(encoding="utf-8"), re.M)
+        upstreams = json.loads((SCRIPT.parents[1] / "ai" / "upstreams.json").read_text(encoding="utf-8"))["upstreams"]
+        registered = next(e["pinned"] for e in upstreams if e["id"] == "html-proofer")
+        self.assertIsNotNone(pinned)
+        self.assertEqual("v" + pinned.group(1), registered)
 
 
 if __name__ == "__main__":

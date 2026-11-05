@@ -1,6 +1,13 @@
 {%- comment -%}
 Overlay of cayman v0.2.0 `_includes/head-custom.html` (the theme's extension point): the stock Google Analytics
-include, plus the jekyll-feed link.
+include, the jekyll-feed link and, for a translated article, one hreflang alternate per language (x-default is the
+site language's version).
 {%- endcomment -%}
 {% include head-custom-google-analytics.html %}
 {% feed_meta %}
+{%- for item in page.translations %}
+<link rel="alternate" hreflang="{{ item.lang }}" href="{{ item.url | absolute_url }}">
+{%- if item.lang == site.lang %}
+<link rel="alternate" hreflang="x-default" href="{{ item.url | absolute_url }}">
+{%- endif %}
+{%- endfor %}

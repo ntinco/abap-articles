@@ -8,6 +8,8 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
+import yaml  # PyYAML, pinned in tools/requirements.txt
+
 ROOT = Path(__file__).resolve().parents[1]
 # agent-core runs the workspace contract check for every repository; none commits a copy of it.
 SHARED_CONTRACT = ROOT.parent / "agent-core" / "shared/workspace_contract.py"
@@ -72,18 +74,35 @@ def repo_map(root: Path) -> dict[str, object]:
     return result("repo_map", problems)
 
 
-def front_matter(text: str) -> tuple[str, str]:
+def front_matter(text: str) -> tuple[dict, str]:
+    """The Jekyll front matter as PyYAML reads it, and the body; ({}, text) without a closed `---` block."""
     if not text.startswith("---\n"):
-        return "", text
+        return {}, text
     parts = text.split("---\n", 2)
     if len(parts) < 3:
-        return "", text
-    return parts[1], parts[2]
+        return {}, text
+    data = yaml.safe_load(parts[1])
+    if data is None:
+        return {}, parts[2]
+    if not isinstance(data, dict):
+        raise yaml.YAMLError("front matter must be a mapping")
+    return data, parts[2]
 
 
-def scalar(fm: str, key: str) -> str:
-    match = re.search(rf"(?m)^{re.escape(key)}:\s*(.+)$", fm)
-    return match.group(1).strip().strip('"\'') if match else ""
+def read_post(path: Path, problems: list[str]) -> tuple[dict, str] | None:
+    """The post's front matter and body, or None after recording why its YAML does not parse."""
+    try:
+        return front_matter(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        problems.append(f"{path.name}: front matter is not valid YAML: {str(exc).splitlines()[0]}")
+        return None
+
+
+def as_list(value: object) -> list:
+    """A YAML value Jekyll accepts as a list or a single item (`redirect_from`, `translations`)."""
+    if value is None:
+        return []
+    return value if isinstance(value, list) else [value]
 
 
 def post_contracts(root: Path) -> dict[str, object]:
@@ -98,19 +117,22 @@ def post_contracts(root: Path) -> dict[str, object]:
             problems.append(f"{path.name}: filename must be date-lang-lowercase-ascii-slug")
             continue
         day, filename_lang, _ = match.groups()
-        fm, body = front_matter(path.read_text(encoding="utf-8"))
+        by_date[day].add(filename_lang)
+        post = read_post(path, problems)
+        if post is None:
+            continue
+        fm, body = post
         for key in ("layout", "title", "date", "lang", "categories", "description", "translations"):
-            if not re.search(rf"(?m)^{re.escape(key)}:", fm):
+            if key not in fm:
                 problems.append(f"{path.name}: missing front matter {key}")
-        lang = scalar(fm, "lang")
+        lang = fm.get("lang")
         if lang != filename_lang:
             problems.append(f"{path.name}: lang {lang!r} does not match filename")
-        if scalar(fm, "layout") != "article":
+        if fm.get("layout") != "article":
             problems.append(f"{path.name}: layout must be article")
-        by_date[day].add(filename_lang)
-        for required_lang in LANGS:
-            if not re.search(rf"(?m)^\s*- lang:\s*{required_lang}\s*$", fm):
-                problems.append(f"{path.name}: translations missing {required_lang}")
+        translated = {item.get("lang") for item in as_list(fm.get("translations")) if isinstance(item, dict)}
+        for required_lang in sorted(LANGS - translated):
+            problems.append(f"{path.name}: translations missing {required_lang}")
         if 'class="note"' not in body:
             problems.append(f"{path.name}: missing visible production-protection note")
     for day, langs in by_date.items():
@@ -119,58 +141,27 @@ def post_contracts(root: Path) -> dict[str, object]:
     return result("post_contracts", problems)
 
 
-def post_permalinks(root: Path) -> set[str]:
-    """Jekyll URLs of the canonical posts, for the `_config.yml` permalink pattern.
-
-    Supports what the posts use: inline-list or scalar categories, a front matter `date`, `slug` or `permalink`.
-    """
-    config = root / "_config.yml"
-    pattern = scalar(config.read_text(encoding="utf-8"), "permalink") if config.exists() else ""
-    pattern = pattern or "/:categories/:year/:month/:day/:title/"
-    urls: set[str] = set()
-    for path in sorted((root / "_posts").glob("*.md")):
-        match = re.fullmatch(r"(\d{4}-\d{2}-\d{2})-(.+)\.md", path.name)
-        if not match:
-            continue
-        fm, _ = front_matter(path.read_text(encoding="utf-8"))
-        if scalar(fm, "permalink"):
-            urls.add(scalar(fm, "permalink"))
-            continue
-        dated = re.match(r"(\d{4})-(\d{2})-(\d{2})", scalar(fm, "date")) or re.match(r"(\d{4})-(\d{2})-(\d{2})", path.name)
-        year, month, day = dated.groups()
-        raw = scalar(fm, "categories")
-        items = raw[1:-1].split(",") if raw.startswith("[") else raw.split()
-        categories = dict.fromkeys(c.strip().strip('"\'').lower() for c in items if c.strip())
-        values = {"categories": "/".join(categories), "year": year, "month": month, "day": day,
-                  "title": scalar(fm, "slug") or match.group(2)}
-        url = re.sub(r":(categories|year|month|day|title)", lambda m: values[m.group(1)], pattern)
-        urls.add(re.sub(r"/{2,}", "/", url))
-    return urls
-
-
-def block_list(fm: str, key: str) -> list[str]:
-    """Items of a YAML block list (`key:` then `  - item` lines; a trailing `# comment` is ignored), or a scalar `key: item`."""
-    match = re.search(rf"(?m)^{re.escape(key)}:[ \t]*(.*)\n((?:[ \t]+-[ \t]*.*\n?)*)", fm)
-    if not match:
-        return []
-    inline = re.sub(r"(^|\s)#.*$", "", match.group(1)).strip()
-    if inline:
-        return [inline.strip('"\'')]
-    return [re.sub(r"^\s*-\s*", "", line).strip().strip('"\'') for line in match.group(2).splitlines() if line.strip()]
-
-
 def redirect_contracts(root: Path) -> dict[str, object]:
-    """Each legacy URL is a site-local `redirect_from` entry of one canonical post, never a post's own URL."""
+    """Each legacy URL is a site-local `redirect_from` entry of one canonical post, never a post's own URL.
+
+    A post's own URL is the one its `translations` declare; html-proofer on the built site (tools/jekyll_build.sh)
+    checks that every declared URL is where Jekyll put the post.
+    """
     problems: list[str] = []
-    permalinks = post_permalinks(root)
-    seen: dict[str, str] = {}
+    posts: list[tuple[Path, dict]] = []
     for path in sorted((root / "_posts").glob("*.md")):
-        fm, _ = front_matter(path.read_text(encoding="utf-8"))
-        for source in block_list(fm, "redirect_from"):
+        post = read_post(path, problems)
+        if post is not None:
+            posts.append((path, post[0]))
+    canonical = {str(item.get("url")) for _, fm in posts for item in as_list(fm.get("translations"))
+                 if isinstance(item, dict) and item.get("url")}
+    seen: dict[str, str] = {}
+    for path, fm in posts:
+        for source in map(str, as_list(fm.get("redirect_from"))):
             if not source.startswith("/") or source.startswith("//"):
                 problems.append(f"{path.name}: redirect_from {source!r} must be a site-local path")
-            elif source in permalinks:
-                problems.append(f"{path.name}: redirect_from {source} is a canonical post permalink")
+            elif source in canonical:
+                problems.append(f"{path.name}: redirect_from {source} is a canonical post URL")
             elif source in seen:
                 problems.append(f"{path.name}: redirect_from {source} already redirects to {seen[source]}")
             else:

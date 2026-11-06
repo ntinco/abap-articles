@@ -4,6 +4,12 @@
 # images and scripts. Needs Docker and network access (remote theme, Debian and RubyGems packages). The source is
 # mounted read-only and the output stays in the container.
 set -eu
+# Without a running Docker daemon (Colima stopped) the local build is skipped, not failed: the stock GitHub Pages
+# workflow builds the same image on every push, and no Ruby/Jekyll toolchain is kept on the host to duplicate it.
+if ! docker info >/dev/null 2>&1; then
+  echo "jekyll_build.sh: skipped: no Docker daemon (colima start); the GitHub Pages workflow builds on push" >&2
+  exit 0
+fi
 root=$(cd "$(dirname "$0")/.." && pwd)
 # The image tag follows the workflow's SHA pin through its version comment, which Dependabot rewrites on each bump.
 tag=$(sed -n 's/.*uses: actions\/jekyll-build-pages@[0-9a-f]\{40\} # \(v[0-9][0-9.]*\)$/\1/p' "$root/.github/workflows/jekyll-gh-pages.yml")

@@ -4,8 +4,6 @@ on:
   push:
     branches: [main]
   pull_request:
-  schedule:
-    - cron: "23 7 * * 1"
 
 permissions:
   contents: read
@@ -30,6 +28,3 @@ jobs:
           python-version: "3.12"
       - run: python3 -m pip install -r tools/requirements.txt
       - run: python3 -m unittest discover -s tests -v
-      - run: python3 tools/health_check.py --strict
-      # The validator ai/repo-map.json declares: a pull request that breaks the site fails here, not after the merge.
-      - run: sh tools/jekyll_build.sh

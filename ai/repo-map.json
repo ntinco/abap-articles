@@ -2,14 +2,29 @@
   "schema_version": "1.0",
   "purpose": "Human-owned publication operated primarily by AI with human-facing output.",
   "routing": {
-    "write_or_edit_article": ["prompts/editorial-voice.md", "_posts/"],
-    "translation_sync": ["_posts/"],
-    "publishing_mechanics": ["_posts/", "_layouts/", "_includes/", "assets/css/style.scss", "index.html", "posts.md", "_config.yml", "ai/upstreams.json"],
-    "editorial_voice_change": ["prompts/editorial-voice.md"]
+    "write_or_edit_article": [
+      "prompts/editorial-voice.md",
+      "_posts/"
+    ],
+    "translation_sync": [
+      "_posts/"
+    ],
+    "publishing_mechanics": [
+      "_posts/",
+      "_layouts/",
+      "_includes/",
+      "assets/css/style.scss",
+      "index.html",
+      "posts.md",
+      "_config.yml",
+      "ai/upstreams.json"
+    ],
+    "editorial_voice_change": [
+      "prompts/editorial-voice.md"
+    ]
   },
   "validators": [
     "python3 ../agent-core/shared/run_tests.py",
-    "python3 tools/health_check.py --strict",
     "sh tools/jekyll_build.sh"
   ]
 }

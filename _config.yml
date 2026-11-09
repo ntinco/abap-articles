@@ -37,7 +37,6 @@ author:
 exclude:
   - README.md
   - AGENTS.md
-  - CLAUDE.md
   - abap-craft.code-workspace
   - ai
   - prompts

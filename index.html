@@ -112,14 +112,14 @@ layout: default
 <script>
   (function () {
     var supported = ['en', 'de', 'es'];
-    var stored = localStorage.getItem('abapKeyflowLang');
+    var stored = localStorage.getItem('abapArticlesLang');
     var browser = (navigator.language || navigator.userLanguage || 'en').slice(0, 2).toLowerCase();
     var lang = supported.includes(stored) ? stored : (supported.includes(browser) ? browser : 'en');
 
     function setLanguage(nextLang) {
       if (!supported.includes(nextLang)) nextLang = 'en';
       document.documentElement.lang = nextLang;
-      localStorage.setItem('abapKeyflowLang', nextLang);
+      localStorage.setItem('abapArticlesLang', nextLang);
       document.querySelectorAll('.lang-view').forEach(function (el) {
         el.classList.toggle('active', el.getAttribute('data-lang') === nextLang);
       });

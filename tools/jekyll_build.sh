@@ -19,7 +19,7 @@ proofer=5.2.3
 # A source the Docker daemon cannot see mounts empty and would build an empty site: fail on it instead.
 # Site URLs carry `url` and `baseurl` from _config.yml; html-proofer maps them back to paths in the built folder.
 exec docker run --rm --platform linux/amd64 -v "$root":/src:ro \
-  -e JEKYLL_ENV=production -e PAGES_REPO_NWO=ntinco/abap-craft -e PROOFER="$proofer" \
+  -e JEKYLL_ENV=production -e PAGES_REPO_NWO=ntinco/abap-articles -e PROOFER="$proofer" \
   --entrypoint /bin/sh "ghcr.io/actions/jekyll-build-pages:$tag" -c '
 set -eu
 test -f /src/_config.yml

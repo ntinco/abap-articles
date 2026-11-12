@@ -2,7 +2,7 @@
 
 Practical SAP/ABAP architecture lessons from real experience, in English, German and Spanish.
 
-Website: `https://nor001.github.io/ABAP_Keyflow/` (the URL keeps the former name so published links stay stable).
+Website: `https://ntinco.github.io/abap-articles/`.
 
 - `_posts/` — articles; `_layouts/`, `_includes/`, `assets/css/style.scss` — overlays on the stock cayman theme.
 - `prompts/editorial-voice.md` — the author's voice and positioning.

@@ -18,7 +18,7 @@ translations:
     label: Deutsch
     url: /architektur/2026/06/08/de-wie-ich-architectural-drift-in-sap-pm-gestoppt-habe/
   - lang: es
-    label: Espanol
+    label: Español
     url: /arquitectura/2026/06/08/es-como-detuve-architectural-drift-en-sap-pm/
 ---
 

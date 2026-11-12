@@ -15,7 +15,6 @@
       "_includes/",
       "assets/css/style.scss",
       "index.html",
-      "posts.md",
       "_config.yml",
       "ai/upstreams.json"
     ],

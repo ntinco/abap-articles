@@ -24,13 +24,13 @@
       "pinned": "v1.0.13",
       "reviewed": "2026-11-05",
       "cadence_days": 90,
-      "what": "Jekyll build image and its stock plugins (remote-theme, seo-tag, feed, sitemap, redirect-from); Dependabot bumps the workflow pin, `tools/jekyll_build.sh` follows it.",
+      "what": "Jekyll build image and its stock plugins (remote-theme, seo-tag, feed, sitemap, redirect-from); the workflow's SHA pin and its version comment move together by hand when this entry is behind, `tools/jekyll_build.sh` follows the comment.",
       "used_in": [
         "_config.yml",
         ".github/workflows/jekyll-gh-pages.yml",
         "tools/jekyll_build.sh"
       ],
-      "review": "Read the release notes; check the Docker build output, --mark."
+      "review": "Read the release notes; move the workflow's SHA pin and version comment, check the Docker build output, --mark."
     },
     {
       "id": "pages-jekyll-workflow",

@@ -11,7 +11,7 @@ if ! docker info >/dev/null 2>&1; then
   exit 0
 fi
 root=$(cd "$(dirname "$0")/.." && pwd)
-# The image tag follows the workflow's SHA pin through its version comment, which Dependabot rewrites on each bump.
+# The image tag follows the workflow's SHA pin through its version comment; a bump edits both (ai/upstreams.json).
 tag=$(sed -n 's/.*uses: actions\/jekyll-build-pages@[0-9a-f]\{40\} # \(v[0-9][0-9.]*\)$/\1/p' "$root/.github/workflows/jekyll-gh-pages.yml")
 case $tag in v[0-9]*.[0-9]*) ;; *) echo "jekyll_build.sh: no 'jekyll-build-pages@<sha> # vX.Y.Z' pin in the workflow" >&2; exit 1 ;; esac
 # html-proofer, registered in ai/upstreams.json; it loads libcurl, which the image lacks.

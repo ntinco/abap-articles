@@ -29,7 +29,9 @@ test -f /src/_config.yml
 /usr/local/bundle/bin/jekyll doctor --source /src --destination /tmp/_site
 test -f /tmp/_site/index.html
 (apt-get update -qq && apt-get install -y -qq --no-install-recommends libcurl4) >/dev/null
-gem install html-proofer -v "$PROOFER" --no-document --quiet
+# Its native extensions (io-event) compile under amd64 emulation on an arm64 host, where gcc now and then segfaults
+# (local_ci 2026-11-14): one retry absorbs that flake; a second failure is real.
+gem install html-proofer -v "$PROOFER" --no-document --quiet || gem install html-proofer -v "$PROOFER" --no-document --quiet
 # --swap-urls takes `regex:replacement` pairs, a colon inside a regex escaped as `\:`.
 swap=$(ruby -ryaml -e "c = YAML.load_file(%q(/src/_config.yml)); u, b = c[%q(url)].to_s, c[%q(baseurl)].to_s
   puts [u + b, b].reject(&:empty?).map { |s| %q(^) + Regexp.escape(s).gsub(%q(:), %q(\\:)) + %q(:) }.join(%q(,))")

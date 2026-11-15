@@ -2,6 +2,8 @@
 """Publication contracts of `_posts/`: EN/DE/ES sets, front matter, and the visible anonymization note."""
 from __future__ import annotations
 
+import argparse
+import json
 import re
 import sys
 from collections import defaultdict
@@ -59,9 +61,17 @@ def problems(root: Path = ROOT) -> list[str]:
     return found
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--json", action="store_true", help="print {posts, sets, problems} as JSON")
+    args = parser.parse_args(argv)
     found = problems()
-    print("\n".join(f"FAIL {p}" for p in found) or "HEALTH PASS")
+    posts = sorted((ROOT / "_posts").glob("*.md"))
+    sets = len({p.name[:10] for p in posts})
+    if args.json:
+        print(json.dumps({"posts": len(posts), "sets": sets, "problems": found}, indent=1))
+    else:
+        print("\n".join(f"FAIL {p}" for p in found) or f"HEALTH PASS: {len(posts)} posts in {sets} publication sets")
     return 1 if found else 0
 
 

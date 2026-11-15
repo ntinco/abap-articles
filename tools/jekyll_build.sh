@@ -3,7 +3,13 @@
 # checks the built site with html-proofer (pinned below): internal links, the translation pills and hreflang links,
 # images and scripts. Needs Docker and network access (remote theme, Debian and RubyGems packages). The source is
 # mounted read-only and the output stays in the container.
+# Usage: jekyll_build.sh (no arguments); -h prints this text; any other argument exits 2 before Docker is touched.
 set -eu
+case "${1-}" in
+  "") ;;
+  -h|--help) sed -n '2,/^set -eu/p' "$0" | sed '$d; s/^# \{0,1\}//'; exit 0 ;;
+  *) echo "jekyll_build.sh: unknown argument '$1' (it takes none; -h for help)" >&2; exit 2 ;;
+esac
 # Without a running Docker daemon (Colima stopped) the local build is skipped, not failed: the stock GitHub Pages
 # workflow builds the same image on every push, and no Ruby/Jekyll toolchain is kept on the host to duplicate it.
 if ! docker info >/dev/null 2>&1; then

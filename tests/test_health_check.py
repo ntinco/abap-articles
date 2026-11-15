@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -50,6 +52,24 @@ class HealthCheckTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             self.write(Path(tmp), text="---\ntitle: [unclosed\n---\nbody\n")
             self.assertTrue(all("not valid YAML" in p for p in health_check.problems(Path(tmp))))
+
+
+class EntryPointTests(unittest.TestCase):
+    """-h exits 0 doing nothing else; an unknown flag exits 2 naming it (jekyll_build.sh before Docker starts)."""
+    TOOLS = Path(__file__).resolve().parents[1] / "tools"
+
+    def run_tool(self, *command: str) -> subprocess.CompletedProcess:
+        return subprocess.run(list(command), capture_output=True, text=True, timeout=60, stdin=subprocess.DEVNULL)
+
+    def test_help_and_unknown_flag(self):
+        for command in (["sh", str(self.TOOLS / "jekyll_build.sh")], [sys.executable, str(self.TOOLS / "health_check.py")]):
+            with self.subTest(command[-1]):
+                done = self.run_tool(*command, "--help")
+                self.assertEqual(done.returncode, 0, done.stderr)
+                self.assertNotIn("HEALTH", done.stdout)
+                done = self.run_tool(*command, "--bogus")
+                self.assertEqual(done.returncode, 2)
+                self.assertIn("--bogus", done.stderr)
 
 
 if __name__ == "__main__":

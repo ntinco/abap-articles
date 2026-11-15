@@ -165,9 +165,9 @@ El limite es estricto. Una vez que permites que una clase `API` maneje un token,
 Una clase `FACHADA` agrupa instancias de servicios y APIs. Ese es su trabajo completo.
 
 ```
-CLASS zxx_c_fachada_pm DEFINITION.
+CLASS zxx_c_facade_pm DEFINITION.
   PUBLIC SECTION.
-    DATA servicio_orden TYPE REF TO zxx_c_servicio_orden.
+    DATA order_service TYPE REF TO zxx_c_order_service.
     DATA servicio_aviso TYPE REF TO zxx_c_servicio_aviso.
     DATA api_to_system_a TYPE REF TO zxx_c_api_sap_to_system_a.
     ...
@@ -179,9 +179,9 @@ La regla que impongo: **si tiene un `IF` que depende del resultado de un servici
 
 La razon por la que esta regla necesita ser explicita es que `FACHADA` es el lugar mas conveniente para agregar logica. Ya tiene todas las instancias. Es facil escribir `IF gestor->orden->is_valid( ) THEN gestor->api->send( )` directamente ahi. Y la primera vez que lo haces, parece inofensivo.
 
-Tres anos despues, `FACHADA_PM` tiene 40 metodos, 600 lineas y es el nuevo `GESTOR_PRINCIPAL`.
+Tres anos despues, `FACADE_PM` tiene 40 metodos, 600 lineas y es el nuevo `GESTOR_PRINCIPAL`.
 
-La regla tambien tiene un corolario: **las clases EXT no deben depender de `FACHADA_PM`**. Deben declarar dependencias directas del `SERVICIO` o `API` especifico que necesitan. `FACHADA` es para consumidores de alto nivel — reportes, programas, coordinadores — no para extensiones de transaccion.
+La regla tambien tiene un corolario: **las clases EXT no deben depender de `FACADE_PM`**. Deben declarar dependencias directas del `SERVICIO` o `API` especifico que necesitan. `FACHADA` es para consumidores de alto nivel — reportes, programas, coordinadores — no para extensiones de transaccion.
 
 ---
 
@@ -246,7 +246,7 @@ ZXX_C_SERVICIO_EQUIPMENT
 ZXX_C_SERVICIO_FLOC
 
 ── FACHADA (1) ───────────────────────────────
-ZXX_C_FACHADA_PM
+ZXX_C_FACADE_PM
 ```
 
 La arquitectura es legible sin abrir una sola clase.

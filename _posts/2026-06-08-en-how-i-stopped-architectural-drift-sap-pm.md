@@ -165,9 +165,9 @@ The boundary is strict. Once you allow an `API` class to handle a token, you've 
 A `FACHADA` class groups instances of services and APIs. That's its entire job.
 
 ```
-CLASS zxx_c_fachada_pm DEFINITION.
+CLASS zxx_c_facade_pm DEFINITION.
   PUBLIC SECTION.
-    DATA servicio_orden TYPE REF TO zxx_c_servicio_orden.
+    DATA order_service TYPE REF TO zxx_c_order_service.
     DATA servicio_aviso TYPE REF TO zxx_c_servicio_aviso.
     DATA api_to_system_a TYPE REF TO zxx_c_api_sap_to_system_a.
     ...
@@ -179,9 +179,9 @@ The rule I enforce: **if it has an `IF` that depends on the result of a service 
 
 The reason this rule needs to be explicit is that `FACHADA` is the most convenient place to add logic. It already has all the instances. It's easy to write `IF gestor->orden->is_valid( ) THEN gestor->api->send( )` right there. And the first time you do it, it seems harmless.
 
-Three years later, `FACHADA_PM` has 40 methods, 600 lines, and is the new `GESTOR_PRINCIPAL`.
+Three years later, `FACADE_PM` has 40 methods, 600 lines, and is the new `GESTOR_PRINCIPAL`.
 
-The rule also has a corollary: **EXT classes must not depend on `FACHADA_PM`**. They must declare direct dependencies on the specific `SERVICIO` or `API` they need. `FACHADA` is for high-level consumers — reports, programs, coordinators — not for transaction extensions.
+The rule also has a corollary: **EXT classes must not depend on `FACADE_PM`**. They must declare direct dependencies on the specific `SERVICIO` or `API` they need. `FACHADA` is for high-level consumers — reports, programs, coordinators — not for transaction extensions.
 
 ---
 
@@ -246,7 +246,7 @@ ZXX_C_SERVICIO_EQUIPMENT
 ZXX_C_SERVICIO_FLOC
 
 ── FACHADA (1) ───────────────────────────────
-ZXX_C_FACHADA_PM
+ZXX_C_FACADE_PM
 ```
 
 The architecture is readable without opening a single class.

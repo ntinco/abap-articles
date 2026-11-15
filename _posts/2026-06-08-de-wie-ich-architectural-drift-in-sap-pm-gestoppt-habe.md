@@ -165,7 +165,7 @@ Die Grenze ist streng. Sobald du einer `API`-Klasse erlaubst, einen Token zu han
 Eine `FACHADA`-Klasse gruppiert Instanzen von Services und APIs. Das ist ihre gesamte Aufgabe.
 
 ```
-CLASS zxx_c_fachada_pm DEFINITION.
+CLASS zxx_c_facade_pm DEFINITION.
   PUBLIC SECTION.
     DATA servizio_orden TYPE REF TO zxx_c_servizio_orden.
     DATA servizio_aviso TYPE REF TO zxx_c_servizio_aviso.
@@ -179,9 +179,9 @@ Die Regel, die ich erzwinge: **wenn sie ein `IF` hat, das vom Ergebnis eines Ser
 
 Der Grund, warum diese Regel explizit sein muss, ist, dass `FACHADA` der bequemste Ort ist, um Logik hinzuzufuegen. Sie hat bereits alle Instanzen. Es ist einfach, `IF gestor->orden->is_valid( ) THEN gestor->api->send( )` direkt dort zu schreiben. Und das erste Mal, wenn du es tust, sieht es harmlos aus.
 
-Drei Jahre spaeter hat `FACHADA_PM` 40 Methoden, 600 Zeilen und ist der neue `GESTOR_PRINCIPAL`.
+Drei Jahre spaeter hat `FACADE_PM` 40 Methoden, 600 Zeilen und ist der neue `GESTOR_PRINCIPAL`.
 
-Die Regel hat auch ein Korollar: **EXT-Klassen duerfen nicht von `FACHADA_PM` abhaengen**. Sie muessen direkte Abhaengigkeiten von dem spezifischen `SERVIZIO` oder `API` deklarieren, das sie benoetigen. `FACHADA` ist fuer High-Level-Consumer — Reports, Programme, Koordinatoren — nicht fuer Transaktions-Erweiterungen.
+Die Regel hat auch ein Korollar: **EXT-Klassen duerfen nicht von `FACADE_PM` abhaengen**. Sie muessen direkte Abhaengigkeiten von dem spezifischen `SERVIZIO` oder `API` deklarieren, das sie benoetigen. `FACHADA` ist fuer High-Level-Consumer — Reports, Programme, Koordinatoren — nicht fuer Transaktions-Erweiterungen.
 
 ---
 
@@ -246,7 +246,7 @@ ZXX_C_SERVIZIO_EQUIPMENT
 ZXX_C_SERVIZIO_FLOC
 
 ── FACHADA (1) ───────────────────────────────
-ZXX_C_FACHADA_PM
+ZXX_C_FACADE_PM
 ```
 
 Die Architektur ist lesbar, ohne eine einzige Klasse zu oeffnen.

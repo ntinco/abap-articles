@@ -15,7 +15,13 @@
         "_layouts/article.html",
         "index.html"
       ],
-      "review": "Diff the overlaid stock files between pin and new tag; bump `remote_theme`, run the validators, --mark."
+      "review": "Diff the overlaid stock files between pin and new tag; bump `remote_theme`, run the validators, --mark.",
+      "ai_policy": {
+        "rule": "none",
+        "source": "https://raw.githubusercontent.com/pages-themes/cayman/HEAD/docs/CONTRIBUTING.md",
+        "read": "2026-11-18",
+        "note": "no AI rule"
+      }
     },
     {
       "id": "github-pages-jekyll",
@@ -30,7 +36,13 @@
         ".github/workflows/jekyll-gh-pages.yml",
         "tools/jekyll_build.sh"
       ],
-      "review": "Read the release notes; move the workflow's SHA pin and version comment, check the Docker build output, --mark."
+      "review": "Read the release notes; move the workflow's SHA pin and version comment, check the Docker build output, --mark.",
+      "ai_policy": {
+        "rule": "none",
+        "source": "https://raw.githubusercontent.com/actions/jekyll-build-pages/HEAD/README.md",
+        "read": "2026-11-18",
+        "note": "no contributing file; README read, no AI rule"
+      }
     },
     {
       "id": "pages-jekyll-workflow",
@@ -44,7 +56,13 @@
       "used_in": [
         ".github/workflows/jekyll-gh-pages.yml"
       ],
-      "review": "Diff the starter between pins, copy changes keeping pins and permissions, --mark."
+      "review": "Diff the starter between pins, copy changes keeping pins and permissions, --mark.",
+      "ai_policy": {
+        "rule": "none",
+        "source": "https://raw.githubusercontent.com/actions/starter-workflows/HEAD/CONTRIBUTING.md",
+        "read": "2026-11-18",
+        "note": "no AI rule"
+      }
     },
     {
       "id": "pyyaml",
@@ -58,7 +76,13 @@
         "tools/requirements.txt",
         "tools/health_check.py"
       ],
-      "review": "Bump `tools/requirements.txt` with agent-core's pin, run the tests, --mark."
+      "review": "Bump `tools/requirements.txt` with agent-core's pin, run the tests, --mark.",
+      "ai_policy": {
+        "rule": "none",
+        "source": "https://raw.githubusercontent.com/yaml/pyyaml/HEAD/README.md",
+        "read": "2026-11-18",
+        "note": "no contributing file; README read, no AI rule"
+      }
     },
     {
       "id": "html-proofer",
@@ -71,7 +95,13 @@
       "used_in": [
         "tools/jekyll_build.sh"
       ],
-      "review": "Read the release notes; bump `proofer=`, run the build, --mark."
+      "review": "Read the release notes; bump `proofer=`, run the build, --mark.",
+      "ai_policy": {
+        "rule": "none",
+        "source": "https://raw.githubusercontent.com/gjtorikian/html-proofer/HEAD/CODE_OF_CONDUCT.md",
+        "read": "2026-11-18",
+        "note": "no contributing file; README and code of conduct read, no AI rule"
+      }
     }
   ]
 }
